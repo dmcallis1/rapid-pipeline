@@ -60,8 +60,9 @@ create = False
 for network in networks:
     activeStatus, activeVersion = apiGwHelper.getActivationStatus(session, baseurl, apiId, version, network)
 
-    log.info(network + ' network status: ' + activeStatus)
-    if activeStatus == 'ACTIVE' and version == activeVersion:
+    log.info(network + ' network status: ' + activeStatus + ' version: ' + activeVersion + ' (current version: ' + version + ').')
+
+    if version == activeVersion:
         create = True
 
 
