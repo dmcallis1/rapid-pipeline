@@ -56,17 +56,13 @@ API GW CI demo toolkit -> activateApiVersion.py
 optional arguments:
   -h, --help         show this help message and exit
   --config CONFIG    Full or relative path to .edgerc file
-  --section SECTION  The section of the edgerc file with the proper {OPEN} API
-                     credentials.
+  --section SECTION  The section of the edgerc file with the proper {OPEN} API credentials.
 
 required arguments:
-  --version VERSION  The version of the API Gateway definition, which will be
-                     compared with the new external API definition.
+  --version VERSION  The version of the API Gateway definition, which will be compared with the new external API definition.
   --id ID            The Gateway property id for the target API Gateway.
-  --network NETWORK  The target network to activate the version of the Akamai
-                     API Gateway on (PRODUCTION or STAGING)
-  --email EMAIL      A comma-seperated list of e-mails for which activation
-                     statuses will be sent.
+  --network NETWORK  The target network to activate the version of the Akamai API Gateway on (PRODUCTION or STAGING)
+  --email EMAIL      A comma-seperated list of e-mails for which activation statuses will be sent.
 ```
 
 While all scripts expect a series of required arguments (listed below), each script can support the following optional arguments:
