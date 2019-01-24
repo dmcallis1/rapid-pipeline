@@ -22,7 +22,9 @@ The *API Gateway CI Toolkit* requires the following to be in place prior to init
 
 All package dependencies are maintained in the requirements.txt file. Use pip to install:
 
+```
 pip install -r requirements.txt
+```
 
 ### Runtime Environment
 
@@ -34,7 +36,11 @@ It should also be noted that the scripts assume the runtime environment will be 
 
 All scripts must be invoked using the python3 interpreter directly.
 
-Example python3 \<script\> \<arguments\>
+**Example**
+
+```
+python3 \<script\> \<arguments\>
+```
 
 The arguments supported by each script will be defined below, and can be identified by calling the script with a '--help' or no argument:
 
