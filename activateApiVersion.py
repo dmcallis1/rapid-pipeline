@@ -17,7 +17,7 @@ parser.add_argument('--config', action="store", default=os.environ['HOME'] + "/.
 parser.add_argument('--section', action="store", default="default", help="The section of the edgerc file with the proper {OPEN} API credentials.")
 requiredNamed.add_argument('--version', action="store", default="latest", help="The version of the API Gateway definition, which will be compared with the new external API definition.")
 requiredNamed.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
-requiredNamed.add_argument('--network', action="store", default="staging", help="The Gateway property id for the target API Gateway.")
+requiredNamed.add_argument('--network', action="store", default="staging", help="The target network to activate the version of the Akamai API Gateway on (PRODUCTION or STAGING)")
 requiredNamed.add_argument('--email', action="store", help="A comma-seperated list of e-mails for which activation statuses will be sent.")
 args = parser.parse_args()
 

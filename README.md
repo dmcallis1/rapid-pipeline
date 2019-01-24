@@ -57,7 +57,8 @@ required arguments:
   --version VERSION  The version of the API Gateway definition, which will be
                      compared with the new external API definition.
   --id ID            The Gateway property id for the target API Gateway.
-  --network NETWORK  The Gateway property id for the target API Gateway.
+  --network NETWORK  The target network to activate the version of the Akamai
+                     API Gateway on (PRODUCTION or STAGING)
   --email EMAIL      A comma-seperated list of e-mails for which activation
                      statuses will be sent.
 ```
