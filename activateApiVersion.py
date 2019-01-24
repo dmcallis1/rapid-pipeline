@@ -1,38 +1,38 @@
 import logging
 import sys
-import json
 from lib import apiGwHelper
 import requests
 from time import sleep
+import argparse
+import os
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 
 logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger()
 
-# Full path to '.edgerc' file
-edgeRcLoc = '/Users/dmcallis/.edgerc-a2snew'
-edgeRcSection = 'default'
+# Source in command line arguments
+parser = argparse.ArgumentParser(description='API GW CI demo toolkit -> ' + os.path.basename(__file__))
+parser.add_argument('--config', action="store", default=os.environ['HOME'] + "/.edgerc", help="Full or relative path to .edgerc file")
+parser.add_argument('--version', action="store", default="latest", help="The version of the API Gateway definition, which will be compared with the new external API definition.")
+parser.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
+parser.add_argument('--network', action="store", default="staging", help="The Gateway property id for the target API Gateway.")
+parser.add_argument('--section', action="store", default="default", help="The section of the edgerc file with the proper {OPEN} API credentials.")
+parser.add_argument('--email', action="store", help="A comma-seperated list of e-mails for which activation statuses will be sent.")
+args = parser.parse_args()
 
-# List for activation email
-emailList = ['dmcallis@akamai.com']
-
-# Check arguments
-argLen = len(sys.argv)
-log.debug('Found ' + str(argLen) + ' command line arguments.')
-
-if argLen != 4:
-    log.error('Incorrect number of arguments! Found: ' + str(argLen - 1) + '. Expected: 3')
-    log.error('Usage: activateApiVersion.py [Api ID] [Network] [Version]')
+if len(sys.argv) <=3:
+    parser.print_help()
     sys.exit(1)
 
-# Command line arguments
-apiId = sys.argv[1]
-network = sys.argv[2]
-version = sys.argv[3]
+# List for activation email
+emailList = args.email.split(",")
 
-
-for arg in sys.argv:
-    log.debug('Argument: ' +  arg)
+# Other Command line arguments
+apiId = str(args.id)
+network = args.network
+version = args.version
+edgeRcLoc = args.config
+edgeRcSection = args.section
 
 log.debug('Initializing Akamai {OPEN} client authentication. Edgerc: ' + edgeRcLoc + ' Section: ' + edgeRcSection)
 

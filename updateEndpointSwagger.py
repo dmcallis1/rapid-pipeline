@@ -2,40 +2,35 @@ import requests
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 import logging
 import sys
-import json
+import argparse
+import os
 from lib import apiGwHelper
 
 logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger()
 
+# Source in command line arguments
+parser = argparse.ArgumentParser(description='API GW CI demo toolkit -> ' + os.path.basename(__file__))
+parser.add_argument('--config', action="store", default=os.environ['HOME'] + "/.edgerc", help="Full or relative path to .edgerc file")
+parser.add_argument('--section', action="store", default="default", help="The section of the edgerc file with the proper {OPEN} API credentials.")
+parser.add_argument('--file', action="store", default=[], help="The relative or absolute path to the swagger or RAML file.")
+parser.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
+args = parser.parse_args()
+
 # Full path to '.edgerc' file
-edgeRcLoc = '/Users/dmcallis/.edgerc-a2snew'
-edgeRcSection = 'default'
-
-# Check arguments
-argLen = len(sys.argv)
-log.debug('Found ' + str(argLen) + ' command line arguments.')
-
-if argLen != 3:
-    log.error('Incorrect number of arguments! Found: ' + str(argLen - 1) + '. Expected: 1')
-    log.error('Usage: updateEndpointSwagger.py [Api ID] [Path to Swagger File]')
-    sys.exit(1)
-
-# Command line arguments
-apiId = sys.argv[1]
-swaggerFile = sys.argv[2]
+edgeRcLoc = args.config
+edgeRcSection = args.section
+apiId = str(args.id)
+swaggerFile = args.file
 
 # Verify file exists
-if apiGwHelper.validateSwaggerFile(swaggerFile) != True:
-    log.error('The Swagger file argument provided is not a valid file, or it cannot be found.')
+if os.path.isfile(swaggerFile) != True:
+    log.error('The Swagger or RAML file argument provided is not a valid file, or it cannot be found.')
     log.error('Ensure the file is properly pathed and exists, with read permissions.')
     sys.exit(1)
 
-
-log.info('Using swagger file: ' + swaggerFile)
-
-for arg in sys.argv:
-    log.debug('Argument: ' +  arg)
+fileFormat = apiGwHelper.determineDefinitionType(swaggerFile)
+log.info('Using + ' + fileFormat + ' file: ' + swaggerFile)
 
 '''
     Edgegrid authentication Section
@@ -70,7 +65,7 @@ log.info('Using latest version Id: ' + version + ' for API definition: ' + apiNa
 log.info('Comparing API definition resources with Swagger definition...')
 try:
     apiDefNum, fileDefNum = apiGwHelper.compareDefinitionCounts(session, baseurl, apiId, version, swaggerFile)
-    log.info('Swagger file resources: ' + str(fileDefNum) + '. API Definition Resources: ' + str(apiDefNum) + '.')
+    log.info(fileFormat + ' file resources: ' + str(fileDefNum) + '. API Definition Resources: ' + str(apiDefNum) + '.')
 
 except Exception as e:
     log.error('Error encountered obtaining API resource counts for version: ' + version)
@@ -82,12 +77,12 @@ try:
     respCode, respContent = apiGwHelper.uploadSwaggerDef(session, baseurl, apiId, version, swaggerFile)
 
     if respCode != 200:
-        log.error('RAPID API returned an error!')
+        log.error('API Gateway returned an error!')
         log.error('Error: ' + str(respContent))
 
     log.info('Import Success! Response code: ' + str(respCode))
 
 
 except Exception as e:
-    log.error('Error importing swagger API definition!')
+    log.error('Error importing API definition!')
     log.error(e)

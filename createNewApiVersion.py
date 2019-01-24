@@ -2,28 +2,29 @@ import requests
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 import logging
 import sys
-import json
+import argparse
+import os
 from lib import apiGwHelper
 
 logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s %(message)s')
 log = logging.getLogger()
 
-# Full path to '.edgerc' file
-edgeRcLoc = '/Users/dmcallis/.edgerc-a2snew'
-edgeRcSection = 'default'
 
-# Check arguments
-argLen = len(sys.argv)
-log.debug('Found ' + str(argLen) + ' command line arguments.')
+# Source in command line arguments
+parser = argparse.ArgumentParser(description='API GW CI demo toolkit -> ' + os.path.basename(__file__))
+parser.add_argument('--config', action="store", default=os.environ['HOME'] + "/.edgerc", help="Full or relative path to .edgerc file")
+parser.add_argument('--section', action="store", default="default", help="The section of the edgerc file with the proper {OPEN} API credentials.")
+parser.add_argument('--version', action="store", default="latest", help="The version of the API Gateway definition, which will be compared with the new external API definition.")
+parser.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
+args = parser.parse_args()
 
-if argLen != 3:
-    log.error('Incorrect number of arguments! Found: ' + str(argLen - 1) + '. Expected: 1')
-    log.error('Usage: updateEndpointSwagger.py [Api ID] [API Version]')
+if len(sys.argv) <=3:
+    parser.print_help()
     sys.exit(1)
 
 # Command line arguments
-apiId = sys.argv[1]
-version = sys.argv[2]
+apiId = str(args.id)
+version = args.version
 
 log.info('Using version passed from arguments: \'' + version + '\'')
 
@@ -35,12 +36,13 @@ for arg in sys.argv:
     Session and baseurl objects will be passed to helper methods.
 '''
 
-log.debug('Initializing Akamai {OPEN} client authentication. Edgerc: ' + edgeRcLoc + ' Section: ' + edgeRcSection)
+log.debug('Initializing Akamai {OPEN} client authentication. Edgerc: ' + args.config + ' Section: ' + args.section)
+
 try:
-    edgerc = EdgeRc(edgeRcLoc)
-    baseurl = 'https://%s' % edgerc.get(edgeRcSection, 'host')
+    edgerc = EdgeRc(args.config)
+    baseurl = 'https://%s' % edgerc.get(args.section, 'host')
     session = requests.Session()
-    session.auth = EdgeGridAuth.from_edgerc(edgerc, edgeRcSection)
+    session.auth = EdgeGridAuth.from_edgerc(edgerc, args.section)
     log.debug('API Base URL: ' + baseurl)
 
 except Exception as e:
@@ -51,7 +53,7 @@ if version == 'latest':
     log.info('Requested latest version.')
     version, apiName = apiGwHelper.getLatestVersion(session, baseurl, apiId)
 
-log.info('Checking activation status for ' + apiName + ' version: ' + version)
+log.info('Checking activation status for ' + apiName + ' version: ' + args.version)
 
 networks = ['staging', 'production']
 

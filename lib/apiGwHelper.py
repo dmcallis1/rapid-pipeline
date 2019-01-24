@@ -1,13 +1,17 @@
 import yaml
 import os.path
-import json
 
-def validateSwaggerFile(swaggerFile):
+def determineDefinitionType(definition):
 
-    # Todo - pass in swagger file as argument
-    isFile = os.path.isfile(swaggerFile)
-    return isFile
+    with open(definition) as file:
+        line = file.readline()
 
+    if 'raml' in line.lower():
+        return 'raml'
+    elif 'swagger' in line.lower():
+        return 'swagger'
+    else:
+        return None
 
 def getLatestVersion(session, baseurl, apiId):
 
@@ -65,7 +69,8 @@ def uploadSwaggerDef(session, baseurl, apiId, version, swaggerFile):
 
     endpoint = baseurl + '/api-definitions/v2/endpoints/' + apiId + '/versions/' + version + '/file'
 
-    params = {'importFileFormat': 'swagger'}
+    #params = {'importFileFormat': 'swagger'}
+    params = {'importFileFormat': determineDefinitionType(swaggerFile)}
     files = {'importFile': (os.path.basename(swaggerFile), open(swaggerFile, 'r'), 'application/x-yaml')}
     resp = session.post(endpoint, data=params, files=files)
 
@@ -95,6 +100,19 @@ def compareDefinitionCounts(session, baseurl, apiId, version, swaggerFile):
 
 def activateVersion(session, baseurl, apiId, version, network, emailList):
 
+    '''
+
+    Activates and API Gateway definition on an Akamai network (Production or Staging)
+
+    :param session:
+    :param baseurl:
+    :param apiId:
+    :param version:
+    :param network:
+    :param emailList:
+    :return:
+    '''
+
     activationObject = {
         "networks": [
             network
@@ -110,13 +128,36 @@ def activateVersion(session, baseurl, apiId, version, network, emailList):
 
 def getActivationStatus(session, baseurl, apiId, version, network):
 
+    '''
+
+    Returns the status for an activation object.
+
+    :param session:
+    :param baseurl:
+    :param apiId:
+    :param version:
+    :param network:
+    :return:
+    '''
+
     result = getResourceFromVersion(session, baseurl, apiId, version)
     network = network + 'Version'
     activationStatus = result[network]['status']
-    activationVersion = result[network]['versionNumber']
+    activationVersion = str(result[network]['versionNumber'])
     return activationStatus, activationVersion
 
 def createApiVersion(session, baseurl, apiId, version):
+
+    '''
+
+    Creates a new API Gateway definition version.
+
+    :param session:
+    :param baseurl:
+    :param apiId:
+    :param version:
+    :return:
+    '''
 
     endpoint = baseurl + '/api-definitions/v2/endpoints/' + apiId + '/versions/' + version + '/cloneVersion'
     resp = session.post(endpoint)
