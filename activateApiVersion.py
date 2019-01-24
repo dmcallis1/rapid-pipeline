@@ -12,12 +12,13 @@ log = logging.getLogger()
 
 # Source in command line arguments
 parser = argparse.ArgumentParser(description='API GW CI demo toolkit -> ' + os.path.basename(__file__))
+requiredNamed = parser.add_argument_group('required arguments')
 parser.add_argument('--config', action="store", default=os.environ['HOME'] + "/.edgerc", help="Full or relative path to .edgerc file")
-parser.add_argument('--version', action="store", default="latest", help="The version of the API Gateway definition, which will be compared with the new external API definition.")
-parser.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
-parser.add_argument('--network', action="store", default="staging", help="The Gateway property id for the target API Gateway.")
 parser.add_argument('--section', action="store", default="default", help="The section of the edgerc file with the proper {OPEN} API credentials.")
-parser.add_argument('--email', action="store", help="A comma-seperated list of e-mails for which activation statuses will be sent.")
+requiredNamed.add_argument('--version', action="store", default="latest", help="The version of the API Gateway definition, which will be compared with the new external API definition.")
+requiredNamed.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
+requiredNamed.add_argument('--network', action="store", default="staging", help="The Gateway property id for the target API Gateway.")
+requiredNamed.add_argument('--email', action="store", help="A comma-seperated list of e-mails for which activation statuses will be sent.")
 args = parser.parse_args()
 
 if len(sys.argv) <=3:

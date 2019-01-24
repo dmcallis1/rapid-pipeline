@@ -11,10 +11,11 @@ log = logging.getLogger()
 
 # Source in command line arguments
 parser = argparse.ArgumentParser(description='API GW CI demo toolkit -> ' + os.path.basename(__file__))
+requiredNamed = parser.add_argument_group('required arguments')
 parser.add_argument('--config', action="store", default=os.environ['HOME'] + "/.edgerc", help="Full or relative path to .edgerc file")
 parser.add_argument('--section', action="store", default="default", help="The section of the edgerc file with the proper {OPEN} API credentials.")
-parser.add_argument('--file', action="store", default=[], help="The relative or absolute path to the swagger or RAML file.")
-parser.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
+requiredNamed.add_argument('--file', action="store", default=[], help="The relative or absolute path to the swagger or RAML file.")
+requiredNamed.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
 args = parser.parse_args()
 
 # Full path to '.edgerc' file

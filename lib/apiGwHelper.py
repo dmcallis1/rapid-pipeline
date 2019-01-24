@@ -3,6 +3,12 @@ import os.path
 
 def determineDefinitionType(definition):
 
+    '''
+
+    :param definition:
+    :return: String containing definition type.
+    '''
+
     with open(definition) as file:
         line = file.readline()
 
@@ -19,9 +25,9 @@ def getLatestVersion(session, baseurl, apiId):
 
     Returns a string with the latest version number of the API Gateway definition.
 
-    :param session:
-    :param baseurl:
-    :param apiId:
+    :param session: A python requests EdgeGrid session object.
+    :param baseurl: The value of the host field in an Akamai API credentials block.
+    :param apiId: The ID of the API gateway definition.
     :return:
     '''
 
