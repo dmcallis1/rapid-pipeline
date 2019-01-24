@@ -39,7 +39,7 @@ All scripts must be invoked using the python3 interpreter directly.
 **Example**
 
 ```
-python3 \<script\> \<arguments\>
+python3 <script> <arguments>
 ```
 
 The arguments supported by each script will be defined below, and can be identified by calling the script with a '--help' or no argument:
