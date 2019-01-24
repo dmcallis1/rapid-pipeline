@@ -87,12 +87,16 @@ Creates a new API definition version. If the target API Gateway Definition versi
 
 ### updateEndpointFromDefinition.py
 
+Updates an existing Akamai API Gateway resources using either a Swagger or RAML file definition. The script is responsive to detect both RAML and Swagger definition file types.
+
 **Required Arguments**
 
 - '--id': the value of the 'Akamai-generated ID' for the target property (found in Luna Control center).
 - '--file': the relative or absolute path of the Swagger or RAML API definition which will be used to update the Akamai API Gateway definition.
 
 ### activateApiVersion.py
+
+Activates a version of the Akamai API Gateway property version on either PRODUCTION or STAGING networks.
 
 **Required Arguments**
 
