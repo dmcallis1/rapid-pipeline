@@ -11,12 +11,12 @@ logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s %(message)s'
 log = logging.getLogger()
 
 # Source in command line arguments
-parser = argparse.ArgumentParser(description='API GW CI demo toolkit -> ' + os.path.basename(__file__))
+parser = argparse.ArgumentParser(description='API GW CI demo toolkit -> ' + os.path.basename(__file__), formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 requiredNamed = parser.add_argument_group('required arguments')
 parser.add_argument('--config', action="store", default=os.environ['HOME'] + "/.edgerc", help="Full or relative path to .edgerc file")
 parser.add_argument('--section', action="store", default="default", help="The section of the edgerc file with the proper {OPEN} API credentials.")
 requiredNamed.add_argument('--version', action="store", default="latest", help="The version of the API Gateway definition, which will be compared with the new external API definition.")
-requiredNamed.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
+requiredNamed.add_argument('--name', action="store", nargs='+', help="The Gateway property name for the target API Gateway.")
 requiredNamed.add_argument('--network', action="store", default="staging", help="The target network to activate the version of the Akamai API Gateway on (PRODUCTION or STAGING)")
 requiredNamed.add_argument('--email', action="store", help="A comma-seperated list of e-mails for which activation statuses will be sent.")
 args = parser.parse_args()
@@ -29,11 +29,11 @@ if len(sys.argv) <=3:
 emailList = args.email.split(",")
 
 # Other Command line arguments
-apiId = str(args.id)
-network = args.network
+network = args.network.lower()
 version = args.version
 edgeRcLoc = args.config
 edgeRcSection = args.section
+name = ' '.join(args.name)
 
 log.debug('Initializing Akamai {OPEN} client authentication. Edgerc: ' + edgeRcLoc + ' Section: ' + edgeRcSection)
 
@@ -47,6 +47,15 @@ try:
 except Exception as e:
     log.error('Error authenticating Akamai {OPEN} API client.')
     log.error(e)
+
+result = apiGwHelper.getApiGwID(session, baseurl, name)
+
+if result is None:
+    log.error('No API definition could be found with the name: \'' + name + '\'')
+    log.error('Please make sure the correct name is specified, or it exists on the contract tied to your Edgegrid API authorizations.')
+    sys.exit(1)
+else:
+    apiId = str(result)
 
 if version == 'latest':
     log.info('Requested latest version.')

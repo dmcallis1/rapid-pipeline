@@ -1,5 +1,6 @@
 import yaml
 import os.path
+import urllib.parse
 
 def determineDefinitionType(definition):
 
@@ -18,6 +19,16 @@ def determineDefinitionType(definition):
         return 'swagger'
     else:
         return None
+
+def getApiGwID(session, baseurl, name):
+
+    endpoint = baseurl + '/api-definitions/v2/endpoints?contains=' + urllib.parse.quote(name)
+    result = session.get(endpoint).json()
+
+    if result['totalSize'] != 1:
+        return None
+    else:
+        return result['apiEndPoints'][0]['apiEndPointId']
 
 def getLatestVersion(session, baseurl, apiId):
 

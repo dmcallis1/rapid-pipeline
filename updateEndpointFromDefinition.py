@@ -10,18 +10,18 @@ logging.basicConfig(level='INFO', format='%(asctime)s %(levelname)s %(message)s'
 log = logging.getLogger()
 
 # Source in command line arguments
-parser = argparse.ArgumentParser(description='API GW CI demo toolkit -> ' + os.path.basename(__file__))
+parser = argparse.ArgumentParser(description='API GW CI demo toolkit -> ' + os.path.basename(__file__), formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 requiredNamed = parser.add_argument_group('required arguments')
 parser.add_argument('--config', action="store", default=os.environ['HOME'] + "/.edgerc", help="Full or relative path to .edgerc file")
 parser.add_argument('--section', action="store", default="default", help="The section of the edgerc file with the proper {OPEN} API credentials.")
 requiredNamed.add_argument('--file', action="store", default=[], help="The relative or absolute path to the swagger or RAML file.")
-requiredNamed.add_argument('--id', action="store", type=int, help="The Gateway property id for the target API Gateway.")
+requiredNamed.add_argument('--name', action="store", nargs='+', help="The Gateway property name for the target API Gateway.")
 args = parser.parse_args()
 
 # Full path to '.edgerc' file
 edgeRcLoc = args.config
 edgeRcSection = args.section
-apiId = str(args.id)
+name = ' '.join(args.name)
 swaggerFile = args.file
 
 # Verify file exists
@@ -51,6 +51,14 @@ except Exception as e:
     log.error('Error authenticating Akamai {OPEN} API client.')
     log.error(e)
 
+result = apiGwHelper.getApiGwID(session, baseurl, name)
+
+if result is None:
+    log.error('No API definition could be found with the name: \'' + name + '\'')
+    log.error('Please make sure the correct name is specified, or it exists on the contract tied to your Edgegrid API authorizations.')
+    sys.exit(1)
+else:
+    apiId = str(result)
 
 log.info('Retrieving version from API: ' + apiId)
 

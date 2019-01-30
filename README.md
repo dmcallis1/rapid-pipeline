@@ -16,7 +16,7 @@ The above three steps can be orchestrated by some process workflow framework (Je
 The *API Gateway CI Toolkit* requires the following to be in place prior to initial use:
 
 1. An Akamai API client with 'API Definition' READ-WRITE authorizations https://developer.akamai.com/api/getting-started.
-2. An existing API Gateway property created, with the 'Akamai-generated ID' value (found in Luna Control Center, in the API Gateway configuration section).
+2. An existing API Gateway property created, keeping note of the name of the Gateway Instance (found in Luna Control Center, in the API Gateway configuration section).
 
 ## Installation
 
@@ -48,27 +48,34 @@ The arguments supported by each script will be defined below, and can be identif
 python3 activateApiVersion.py --help
 
 usage: activateApiVersion.py [-h] [--config CONFIG] [--section SECTION]
-                             [--version VERSION] [--id ID] [--network NETWORK]
-                             [--email EMAIL]
+                             [--version VERSION] [--name NAME [NAME ...]]
+                             [--network NETWORK] [--email EMAIL]
 
 API GW CI demo toolkit -> activateApiVersion.py
 
 optional arguments:
-  -h, --help         show this help message and exit
-  --config CONFIG    Full or relative path to .edgerc file
-  --section SECTION  The section of the edgerc file with the proper {OPEN} API credentials.
+  -h, --help            show this help message and exit
+  --config CONFIG       Full or relative path to .edgerc file
+                        (default: $HOME/.edgerc)
+  --section SECTION     The section of the edgerc file with the proper {OPEN} API credentials.
+                        (default: default)
 
 required arguments:
-  --version VERSION  The version of the API Gateway definition, which will be compared with the new external API definition.
-  --id ID            The Gateway property id for the target API Gateway.
-  --network NETWORK  The target network to activate the version of the Akamai API Gateway on (PRODUCTION or STAGING)
-  --email EMAIL      A comma-seperated list of e-mails for which activation statuses will be sent.
+  --version VERSION     The version of the API Gateway definition, which will be compared with the new external API definition.
+                        (default: latest)
+  --name NAME [NAME ...]
+                        The Gateway property name for the target API Gateway.
+                        (default: None)
+  --network NETWORK     The target network to activate the version of the Akamai API Gateway on (PRODUCTION or STAGING)
+                        (default: staging)
+  --email EMAIL         A comma-seperated list of e-mails for which activation statuses will be sent.
+                        (default: None)
 ```
 
 While all scripts expect a series of required arguments (listed below), each script can support the following optional arguments:
 
-- '--config': the absolute or relative path of the .edgerc file containing the Akamai API credentials
-- '--section': the specific section within the .edgerc file containing the Akamai API credentials
+- '--config': The absolute or relative path of the .edgerc file containing the Akamai API credentials
+- '--section': The specific section within the .edgerc file containing the Akamai API credentials
 
 ## Script Detail
 
@@ -78,8 +85,8 @@ Creates a new API definition version. If the target API Gateway Definition versi
 
 **Required Arguments**
 
-- '--id': the value of the 'Akamai-generated ID' for the target property (found in Luna Control center).
-- '--version': the target version to update (numeric or 'latest')
+- '--name': The Gateway property name for the target API Gateway (ex: My API Gateway).
+- '--version': The target version to update (numeric or 'latest')
 
 ### updateEndpointFromDefinition.py
 
@@ -87,8 +94,8 @@ Updates an existing Akamai API Gateway resources using either a Swagger or RAML 
 
 **Required Arguments**
 
-- '--id': the value of the 'Akamai-generated ID' for the target property (found in Luna Control center).
-- '--file': the relative or absolute path of the Swagger or RAML API definition which will be used to update the Akamai API Gateway definition.
+- '--name': The Gateway property name for the target API Gateway (ex: My API Gateway).
+- '--file': The relative or absolute path of the Swagger or RAML API definition which will be used to update the Akamai API Gateway definition.
 
 ### activateApiVersion.py
 
@@ -96,7 +103,7 @@ Activates a version of the Akamai API Gateway property version on either PRODUCT
 
 **Required Arguments**
 
-- '--version': the version of the Akamai API Gateway property to activate.
-- '--id': the value of the 'Akamai-generated ID' for the target property (found in Luna Control center).
-- '--network': the target network to activate the version of the Akamai API Gateway on (PRODUCTION or STAGING).
+- '--version': The version of the Akamai API Gateway property to activate.
+- '--name': The Gateway property name for the target API Gateway (ex: My API Gateway).
+- '--network': The target network to activate the version of the Akamai API Gateway on (PRODUCTION or STAGING).
 - '--email': A comma-seperated list of e-mails for which activation statuses will be sent.
